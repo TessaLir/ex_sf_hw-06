@@ -310,7 +310,21 @@ sortActionButton.addEventListener('click', () => {
 /*** ДОБАВИТЬ ФРУКТ ***/
 
 addActionButton.addEventListener('click', () => {
-  // TODO: создание и добавление нового фрукта в массив fruits
-  // необходимые значения берем из kindInput, colorInput, weightInput
-  display();
+  // получим данные из инпутов.
+  const kind = kindInput.value,
+        color = colorInput.value,
+        weight = weightInput.value;
+
+  // Проверим данные, если данных нет, то выведем сообщение alert
+  if (!kind || !color || !weight) {
+    alert('Для добавления фрукта в массив фруктов необходимо заполнить поля названия, цвета и веса для добавляемого фрукта.');
+  } else {
+    // В противном случае добавим новый фрукт в конец списка.
+    fruits.push({
+      "kind": kind,
+      "color": color,
+      "weight":weight
+    });
+    display();
+  }
 });
