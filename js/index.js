@@ -325,6 +325,9 @@ addActionButton.addEventListener('click', () => {
       "color": color,
       "weight":weight
     });
+    // Так же добавим изменения в исходный JSON (эмитация отправки на сервер)
+    // При обновлении страницы с кешем, все изменения конечно же будут отменены.
+    fruitsJSON = JSON.stringify(fruits);
     display();
   }
 });
