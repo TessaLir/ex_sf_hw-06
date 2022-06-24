@@ -23,7 +23,13 @@ let fruitsJSON = `[
 ]`;
 
 // преобразование JSON в объект JavaScript
-let fruits = JSON.parse(fruitsJSON);
+let fruits = [];
+
+// Создан метод получения базовой версии модели с фруктами.
+const getData = () => fruits = JSON.parse(fruitsJSON);
+
+getData();
+
 
 /*** ОТОБРАЖЕНИЕ ***/
 
@@ -124,16 +130,20 @@ const getRandomInt = (min, max) => {
 const shuffleFruits = () => {
   let result = [];
 
-  // ATTENTION: сейчас при клике вы запустите бесконечный цикл и браузер зависнет
+  // По мере исполнения цикла, элдлементы из массива fruits удаляются. так что массив в скором будет равен длине 0.
   while (fruits.length > 0) {
-    // TODO: допишите функцию перемешивания массива
-    //
-    // Подсказка: находим случайный элемент из fruits, используя getRandomInt
-    // вырезаем его из fruits и вставляем в result.
-    // ex.: [1, 2, 3], [] => [1, 3], [2] => [3], [2, 1] => [], [2, 1, 3]
-    // (массив fruits будет уменьшатся, а result заполняться)
+    // Получаем рандомный фрукт.
+    const fruit = fruits[getRandomInt(0, fruits.length - 1)];
+    // Добавляем наш рандомный фреукт к результативному массиву.
+    result.push(fruit);
+    // Перезаписываем массив fruits с вычетом полученного фрукта.
+    // В теории нужен просто класс для описания данной структуры данных, и там реализовать метод сравнения.
+    // На данный момент если название фрукта присутствует в массиве в нескольких экземплярах, то они все будет удалены.
+    // Так же к данному объекту можно добавить UID для унификации данного елемента.
+    fruits = fruits.filter(item => item['kind'] !== fruit['kind']);
   }
 
+  // Записываем результат в массив fruits
   fruits = result;
 };
 
@@ -146,9 +156,21 @@ shuffleButton.addEventListener('click', () => {
 
 // фильтрация массива
 const filterFruits = () => {
-  fruits.filter((item) => {
-    // TODO: допишите функцию
+  // Получаем актуальные данные из JSON
+  getData();
+
+  // Получаем значения из инпутов MIN и MAX
+  const minUserWeight = document.querySelector('.minweight__input').value,
+        maxUserWeight = document.querySelector('.maxweight__input').value;
+
+  // зададим границы минимума и максимума, если пользователь ни чего не ввел, то определим свои значения.
+  const min = minUserWeight ? minUserWeight : 0;                    // Думал изначально использовать Number.MIN_VALUE, но это тут лишнее :-)
+  const max = maxUserWeight ? maxUserWeight : Number.MAX_VALUE;     // То же лишнее, но пусть уж будет.
+
+  fruits = fruits.filter((fruit) => {
+    return +fruit.weight >= min && +fruit.weight <= max 
   });
+
 };
 
 filterButton.addEventListener('click', () => {
@@ -161,13 +183,30 @@ filterButton.addEventListener('click', () => {
 let sortKind = 'bubbleSort'; // инициализация состояния вида сортировки
 let sortTime = '-'; // инициализация состояния времени сортировки
 
+// Проверяем равенстро строк в нижнем регистре. Так как при сравнении строк сравниваются номера символов, 
+// номера символов в верхнем регистре отличаются от номеров нижнем регистре.
 const comparationColor = (a, b) => {
-  // TODO: допишите функцию сравнения двух элементов по цвету
+  return a.toLowerCase() > b.toLowerCase();
 };
 
 const sortAPI = {
   bubbleSort(arr, comparation) {
-    // TODO: допишите функцию сортировки пузырьком
+    // Получаем длину массива.
+    const len = arr.length;
+    // внешняя итерация по элементам
+    for (let i = 0; i < len - 1; i++) {
+      // внутренняя итерация для перестановки элемента в конец массива
+      for (let j = 0; j < len - 1 - i; j++) {
+        // сравнение эелеметонов цвета.
+        if (comparation(arr[j].color, arr[j + 1].color)) {
+          // меняем местаси элементы.
+          const tmp = arr[j + 1];
+          arr[j + 1] = arr[j];
+          arr[j] = tmp;
+        }
+        // Если текущий элемент не больше следующего, то пропускаем ход.
+      }
+    }
   },
 
   quickSort(arr, comparation) {
@@ -192,11 +231,13 @@ sortChangeButton.addEventListener('click', () => {
 });
 
 sortActionButton.addEventListener('click', () => {
-  // TODO: вывести в sortTimeLabel значение 'sorting...'
+
+  sortTimeLabel.textContent = 'sorting...';
+
   const sort = sortAPI[sortKind];
   sortAPI.startSort(sort, fruits, comparationColor);
   display();
-  // TODO: вывести в sortTimeLabel значение sortTime
+  sortTimeLabel.textContent = sortTime;
 });
 
 /*** ДОБАВИТЬ ФРУКТ ***/
