@@ -186,7 +186,10 @@ let sortTime = '-'; // инициализация состояния време�
 // Проверяем равенстро строк в нижнем регистре. Так как при сравнении строк сравниваются номера символов, 
 // номера символов в верхнем регистре отличаются от номеров нижнем регистре.
 const comparationColor = (a, b) => {
-  return a.toLowerCase() > b.toLowerCase();
+  if (a.color.toLowerCase() !== b.color.toLowerCase())
+    return a.color.toLowerCase() > b.color.toLowerCase();
+  else
+    return a.kind.toLowerCase() > b.kind.toLowerCase();
 };
 
 const sortAPI = {
@@ -198,7 +201,7 @@ const sortAPI = {
       // внутренняя итерация для перестановки элемента в конец массива
       for (let j = 0; j < len - 1 - i; j++) {
         // сравнение эелеметонов цвета.
-        if (comparation(arr[j].color, arr[j + 1].color)) {
+        if (comparation(arr[j], arr[j + 1])) {
           // меняем местаси элементы.
           const tmp = arr[j + 1];
           arr[j + 1] = arr[j];
@@ -207,10 +210,58 @@ const sortAPI = {
         // Если текущий элемент не больше следующего, то пропускаем ход.
       }
     }
-  },
+  }, 
 
   quickSort(arr, comparation) {
-    // TODO: допишите функцию быстрой сортировки
+
+    // Метод помогающий поменять местами элементы массива.
+    function swap(items, firstIndex, secondIndex) {
+      const tmp = items[firstIndex];
+      items[firstIndex] = items[secondIndex];
+      items[secondIndex] = tmp;
+    }
+
+    // Метод позволяющий выполнить итерацию проверки Пивота, Грыницы и Текущего елемента.
+    function partition(items, left, right) {
+      let pivot = items[Math.floor((right + left) / 2)];
+      let i = left;
+      let j = right;
+
+      while (i <= j) {
+          while (comparationColor(pivot, items[i])) {
+              i++;
+          }
+          while (comparationColor(items[j], pivot)) {
+              j--;
+          }
+          if (i <= j) {
+              swap(items, i, j);
+              i++;
+              j--;
+          }
+      }
+      return i;
+    }
+
+    // реукурсивная функция для быстрой сортировки массива.
+    function qs (items, left, right) {
+      let index;
+
+      if (items.length > 1) {
+        left = typeof left != "number" ? 0 : left;
+        right = typeof right != "number" ? items.length - 1 : right;
+        index = partition(items, left, right);
+        
+        if (left < index - 1) {
+          qs(items, left, index - 1);
+        } 
+        if (index < right) {
+          qs(items, index, right);
+        }
+      }
+    }
+
+    qs(arr);
   },
 
   // выполняет сортировку и производит замер времени
@@ -227,7 +278,8 @@ sortKindLabel.textContent = sortKind;
 sortTimeLabel.textContent = sortTime;
 
 sortChangeButton.addEventListener('click', () => {
-  // TODO: переключать значение sortKind между 'bubbleSort' / 'quickSort'
+  sortKind = sortKind === 'bubbleSort' ? 'quickSort' : 'bubbleSort';
+  sortKindLabel.textContent = sortKind;
 });
 
 sortActionButton.addEventListener('click', () => {
