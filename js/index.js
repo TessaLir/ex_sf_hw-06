@@ -17,7 +17,9 @@ let fruitsJSON = `[
   {"kind": "Дуриан", "color": "зеленый", "weight": 35},
   {"kind": "Личи", "color": "розово-красный", "weight": 17},
   {"kind": "Карамбола", "color": "желтый", "weight": 28},
-  {"kind": "Тамаринд", "color": "светло-коричневый", "weight": 22}
+  {"kind": "Тамаринд", "color": "светло-коричневый", "weight": 22},
+  {"kind": "Тестовый фрукт не видимый", "color": "желтый"},
+  {"kind": "Тестовый фрукт видимый", "color": "желтый", "weight": 22}
 ]`;
 
 // преобразование JSON в объект JavaScript
@@ -30,11 +32,83 @@ const display = () => {
   // TODO: очищаем fruitsList от вложенных элементов,
   // чтобы заполнить актуальными данными из fruits
 
+  // Производим очистку контента
+  fruitsList.innerText = '';
+
   for (let i = 0; i < fruits.length; i++) {
     // TODO: формируем новый элемент <li> при помощи document.createElement,
     // и добавляем в конец списка fruitsList при помощи document.appendChild
+
+    // При помощи дестректуризации объекта получим его параметры kind, color и weight в виде констант.
+    const {kind = '', color = '', weight = ''} = fruits[i];
+
+    // Добавлена проверка пораметров, если какой-либо из параметров не будет передан, то данных фрукт будет игнорироваться.
+    // К примеру в базовый JSON добавлены 2 тестовых фрукта, фрукт с индексом 5 не будет выводиться в системе, а 6 будет.
+    if (kind && color && weight) {
+
+      // Создадим корневой элемент li и присвоим ему соответствующие классы. 
+      // Класс цвета зависит от цвета фрукта.
+      const fruitLiItem = document.createElement('li');
+      fruitLiItem.classList.add('fruit__item');
+      fruitLiItem.classList.add(getColorClass(color));
+
+      // Создадим контейнер ИНФО для отображения информации по фрукту.
+      const fruitInfoBlock = document.createElement('div');
+      fruitInfoBlock.classList.add('fruit__info');
+
+      // Создадим контейнер с индексом фрукта в массиве, и добавим его в контейнер ИНФО.
+      const fruitIndexDiv = document.createElement('div');
+      fruitIndexDiv.appendChild(document.createTextNode(`index: ${i}`));
+      fruitInfoBlock.appendChild(fruitIndexDiv);
+
+      // Создадим контейнер с данными по названию фрукта, и добавим его в контейнер ИНФО.
+      const fruitKindDiv = document.createElement('div');
+      fruitKindDiv.appendChild(document.createTextNode(`kind: ${kind}`));
+      fruitInfoBlock.appendChild(fruitKindDiv);
+
+      // Создадим контейнер с данными по цвету фрукта, и добавим его в контейнер ИНФО.
+      const fruitColorDiv = document.createElement('div');
+      fruitColorDiv.appendChild(document.createTextNode(`color: ${color}`));
+      fruitInfoBlock.appendChild(fruitColorDiv);
+
+      // Создадим контейнер с данными по весу фрукта, и добавим его в контейнер ИНФО.
+      const fruitweightDiv = document.createElement('div');
+      fruitweightDiv.appendChild(document.createTextNode(`weight (кг): ${weight}`));
+      fruitInfoBlock.appendChild(fruitweightDiv);
+
+      // Добавляем созданный Инфо контейнер в контейнер li
+      fruitLiItem.appendChild(fruitInfoBlock);
+
+      // Добавляем созданный li контейнер на страницу.
+      fruitsList.appendChild(fruitLiItem);
+      
+    }
   }
 };
+
+const getColorClass = (color) => {
+  switch (color) {
+    case 'фиолетовый':
+      result = 'fruit_violet';
+      break;
+    case 'зеленый':
+      result = 'fruit_green';
+      break;
+    case 'розово-красный':
+      result = 'fruit_carmazin';
+      break;
+    case 'желтый':
+      result = 'fruit_yellow';
+      break;
+    case 'светло-коричневый':
+      result = 'fruit_lightbrown';
+      break;
+    default:
+      result = 'fruit_green';
+      break;
+  }
+  return result;
+}
 
 // первая отрисовка карточек
 display();
